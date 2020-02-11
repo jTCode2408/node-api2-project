@@ -72,13 +72,13 @@ if(comments){
 router.post("/:id/comments", (req,res)=>{
     const newComment = req.body
     const {id} = req.params
-    Posts.findById(id)
+    Posts.findCommentById(id)
     .then(commentID=>{
         if(commentID){
             res.status(200).json(commentID)
         }else{
             res.status(404).json({ error: "The post with specified ID does not exist" })
-        }
+        } //find id of post first
     
     Posts.insertComment(newComment)
     .then(comment =>{
@@ -128,13 +128,32 @@ router.delete("/:id", (req,res)=>{
 
 //UPDATES POST by id. returns NEW post(api/posts/:id) req.body
 
+router.put("/:id", (req, res)=>{
+const update = req.body
+const {id} = req.params
+Posts.findById(id)
+.then(edit=>{
+    if (edit){
+        if(update.title && update.contents){
+            Posts.update(id, update)
+            .then(edit=>{
+                res.status(200).json(update)
+            })
+            .catch(err=>{
+                console.log(err);
+                res.status(500).json({ message: "The user information could not be modified."})
 
+            })
+        } else{
+            res.status(400).json({ errorMessage: "Please provide title and contents for post."})
+        }
 
+    } else{
+        res.status(404).json({ errorMessage: "The post with the specified ID does not exist."})
+    }
+})
 
-
-
-
-
+})
 
 
 
