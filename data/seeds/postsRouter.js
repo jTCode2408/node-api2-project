@@ -51,11 +51,27 @@ Posts.findById(req.params.id)
     res.status(500).json({errorMessage: "The post information could not be retrieved."})
 })
 })
+//GET ALL COMMENTS on posts by id(api/posts/:id/comments)
+router.get("/:id/comments", (req,res)=>{
+    Posts.findPostComments(req.params.id)
+    .then(comments =>{
+if(comments){
+    res.status(200).json(comments)
+} else{
+    res.status(404).json({ error: "The post with specified ID does not exist" })
+}
+
+    }).catch(err=>{
+        console.log(err)
+        res.status(500).json({errorMessage: "The comments information could not be retrieved."})
+        
+    })
+})
 
 //create COMMENT for post w/id(api/posts/:id/comments. req.body)
 router.post("/:id/comments")
 
-//GET ALL COMMENTS on posts by id(api/posts/:id/comments)
+
 //DELETE POST by id(should RETURN DELETED OBJECT)(api/posts/:id)
 //UPDATES POST by id. returns NEW post(api/posts/:id) req.body
 
