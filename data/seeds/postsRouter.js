@@ -22,7 +22,7 @@ router.post("/", (req,res)=>{
     Posts.insert(newPost)
     .then(adding =>{
         if(newPost.title || newPost.contents){
-        res.status(200).json(newPost);
+        res.status(201).json(newPost);
     
 } else{
     res.status(400).json({errorMessage: "Please provide title and contents for the post." })
@@ -69,8 +69,32 @@ if(comments){
 })
 
 //create COMMENT for post w/id(api/posts/:id/comments. req.body)
-router.post("/:id/comments")
+router.post("/:id/comments", (req,res)=>{
+    const newComment = req.body
+    const {id} = req.params.id
+    Posts.findById(id)
+    .then(commentID=>{
+        if(commentID){
+            res.status(200).json(commentID)
+        }else{
+            res.status(404).json({ error: "The post with specified ID does not exist" })
+        }
+    
+    Posts.insertComment(newComment)
+    .then(comment =>{
+        if(comment.text){
+            res.status(201).json(newComment);
+        
+    } else{
+        res.status(400).json({errorMessage: "Please provide text for comment." })
+    }
 
+    }).catch(err=>{
+        console.log(err)
+        res.status(500).json({errorMessage: "The comments information could not be retrieved."})
+    })
+})
+}) //<----Adds comment but res not corect
 
 //DELETE POST by id(should RETURN DELETED OBJECT)(api/posts/:id)
 //UPDATES POST by id. returns NEW post(api/posts/:id) req.body
