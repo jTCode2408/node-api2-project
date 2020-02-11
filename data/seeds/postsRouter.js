@@ -71,7 +71,7 @@ if(comments){
 //create COMMENT for post w/id(api/posts/:id/comments. req.body)
 router.post("/:id/comments", (req,res)=>{
     const newComment = req.body
-    const {id} = req.params.id
+    const {id} = req.params
     Posts.findById(id)
     .then(commentID=>{
         if(commentID){
@@ -82,7 +82,7 @@ router.post("/:id/comments", (req,res)=>{
     
     Posts.insertComment(newComment)
     .then(comment =>{
-        if(comment.text){
+        if(commentID==comment){
             res.status(201).json(newComment);
         
     } else{
@@ -94,9 +94,38 @@ router.post("/:id/comments", (req,res)=>{
         res.status(500).json({errorMessage: "The comments information could not be retrieved."})
     })
 })
-}) //<----Adds comment but res not corect
+}) //<----Adds comment but returning POST, NOT NEW COMMENT
 
 //DELETE POST by id(should RETURN DELETED OBJECT)(api/posts/:id)
+router.delete("/:id", (req,res)=>{
+    const deletedPost =req.body
+    const {id}=req.params;
+    Posts.findById(id)
+    .then(deleteID=>{
+        if(deleteID){
+            res.status(200).json(deleteID)
+        }else{
+            res.status(404).json({ error: "The post with specified ID does not exist" })
+        }})
+    Posts.remove(id)
+    
+    .then(deleted=>{
+        if(deleteID==deleted){
+            res.status(200).json(deletedPost)
+        }else{
+            res.status(404).json({errorMessage:"The post with specified user ID does not exist"})
+        }
+
+    })
+    
+    .catch(err=>{
+        console.log(err)
+        res.status(500).json({errorMessage: "The comments information could not be retrieved."})
+    })
+
+})
+
+
 //UPDATES POST by id. returns NEW post(api/posts/:id) req.body
 
 
