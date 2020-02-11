@@ -1,0 +1,1 @@
+//router for posts paths
